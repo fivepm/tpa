@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-6 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     @if ($errors->any())
@@ -29,6 +29,11 @@
                         <div class="mt-4">
                             <label for="username" class="block font-medium text-sm text-gray-700">Username</label>
                             <input id="username" class="block mt-1 w-full rounded-md shadow-sm border-gray-300" type="text" name="username" value="{{ old('username') }}" required />
+                        </div>
+                        <div class="mt-4">
+                            <label for="no_hp" class="block font-medium text-sm text-gray-700">No. HP / WhatsApp <span class="text-gray-400 font-normal">(Opsional)</span></label>
+                            <input id="no_hp" class="block mt-1 w-full rounded-md shadow-sm border-gray-300" type="text" name="no_hp" value="{{ old('no_hp') }}" placeholder="Contoh: 08123456789" />
+                            <small class="text-gray-400">Digunakan untuk menerima notifikasi WhatsApp perkembangan anak.</small>
                         </div>
                         <div class="mt-4">
                             <label for="password" class="block font-medium text-sm text-gray-700">Password</label>

@@ -1,15 +1,19 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Formulir Presensi Harian: Kelas {{ $kelas->nama_kelas }}
-            </h2>
-            <a href="{{ route('guru.presensi.index', ['bulan' => \Carbon\Carbon::parse($tanggal)->format('m'), 'tahun' => \Carbon\Carbon::parse($tanggal)->format('Y')]) }}" class="text-sm text-gray-600">&larr; Kembali</a>
-        </div>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Formulir Presensi Harian: Kelas {{ $kelas->nama_kelas }}
+        </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-6 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-4">
+                <a href="{{ route('guru.presensi.index', ['bulan' => \Carbon\Carbon::parse($tanggal)->format('m'), 'tahun' => \Carbon\Carbon::parse($tanggal)->format('Y')]) }}"
+                   class="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 font-medium">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Kembali ke Daftar Presensi
+                </a>
+            </div>
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 border-b">
                     <p class="text-gray-500 text-sm">Tanggal: {{ \Carbon\Carbon::parse($tanggal)->translatedFormat('l, d F Y') }}</p>

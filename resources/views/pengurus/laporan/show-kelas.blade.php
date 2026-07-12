@@ -1,27 +1,29 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Laporan Detail: Kelas {{ $kelas->nama_kelas }}
-                </h2>
-                <p class="text-sm text-gray-500">
-                    Bulan {{ \Carbon\Carbon::create(null, $bulan, 1)->translatedFormat('F') }} {{ $tahun }}
-                </p>
-            </div>
-            
-                <a href="{{ route('pengurus.laporan.exportKelasPdf', ['kelas' => $kelas->id_kelas, 'bulan' => $bulan, 'tahun' => $tahun]) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    Export PDF
-                </a>
-            <a href="{{ route('pengurus.laporan.index', ['bulan' => $bulan, 'tahun' => $tahun]) }}" class="text-sm text-gray-600 hover:text-gray-900">
-                &larr; Kembali ke Rekap
-            </a>
+        <div>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                Laporan Detail: Kelas {{ $kelas->nama_kelas }}
+            </h2>
+            <p class="text-sm text-gray-500">
+                Bulan {{ \Carbon\Carbon::create(null, $bulan, 1)->translatedFormat('F') }} {{ $tahun }}
+            </p>
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-6 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <div class="flex items-center justify-between">
+                <a href="{{ route('pengurus.laporan.index', ['bulan' => $bulan, 'tahun' => $tahun]) }}"
+                   class="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 font-medium">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Kembali ke Rekap Laporan
+                </a>
+                <a href="{{ route('pengurus.laporan.exportKelasPdf', ['kelas' => $kelas->id_kelas, 'bulan' => $bulan, 'tahun' => $tahun]) }}" target="_blank"
+                   class="inline-flex items-center px-4 py-2 bg-red-600 rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Export PDF
+                </a>
+            </div>
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <h3 class="text-lg font-medium mb-4">Ringkasan Kehadiran Siswa</h3>

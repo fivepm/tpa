@@ -25,16 +25,18 @@ class PengurusController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => ['required', 'string', 'max:255'],
+            'nama'     => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', Rule::unique('users')->whereNull('deleted_at')],
+            'no_hp'    => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         User::create([
-            'nama' => $request->nama,
+            'nama'     => $request->nama,
             'username' => $request->username,
+            'no_hp'    => $request->no_hp,
             'password' => Hash::make($request->password),
-            'role' => 'pengurus'
+            'role'     => 'pengurus'
         ]);
 
         return redirect()->route('pengurus.kelola-pengurus.index')->with('success', 'Data pengurus berhasil ditambahkan.');
@@ -50,14 +52,16 @@ class PengurusController extends Controller
     {
         $pengurus = $kelola_penguru;
         $request->validate([
-            'nama' => ['required', 'string', 'max:255'],
+            'nama'     => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($pengurus->id)->whereNull('deleted_at')],
+            'no_hp'    => ['nullable', 'string', 'max:20'],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $pengurus->update([
-            'nama' => $request->nama,
+            'nama'     => $request->nama,
             'username' => $request->username,
+            'no_hp'    => $request->no_hp,
         ]);
 
         if ($request->filled('password')) {

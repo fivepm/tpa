@@ -5,7 +5,7 @@
         <div class="w-full sm:max-w-md px-6 py-8 bg-white shadow-lg rounded-xl border border-gray-100">
             <div class="mb-8 text-center">
                 <a href="/" class="inline-flex justify-center mb-4">
-                    <img src="https://placehold.co/100x100/16a34a/ffffff?text=LOGO"
+                    <img src="{{ asset('logo.png') }}"
                          alt="Logo" class="h-20 w-20 rounded-full object-cover shadow-sm">
                 </a>
                 <h2 class="text-2xl font-bold text-gray-900">Selamat Datang</h2>
@@ -65,31 +65,6 @@
                     {{ __('Masuk') }}
                 </x-primary-button>
             </form>
-
-            {{-- Divider --}}
-            <div class="relative my-5">
-                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
-                <div class="relative flex justify-center text-sm">
-                    <span class="px-3 bg-white text-gray-400">atau</span>
-                </div>
-            </div>
-
-            {{-- Fast Login (WebAuthn) --}}
-            <div x-show="webAuthnSupported">
-                <p x-show="webAuthnError" x-text="webAuthnError" class="text-red-600 text-sm text-center mb-2"></p>
-                <button @click="fastLogin()" :disabled="webAuthnLoading"
-                    class="w-full flex items-center justify-center gap-3 py-3 border-2 border-indigo-200 rounded-lg text-indigo-700 font-semibold text-sm hover:bg-indigo-50 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.657-1.343-3-3-3s-3 1.343-3 3 1.343 3 3 3 3-1.343 3-3zm6 0c0-1.657-1.343-3-3-3s-3 1.343-3 3 1.343 3 3 3 3-1.343 3-3zm-6 7a9 9 0 110-18 9 9 0 010 18z" />
-                    </svg>
-                    <span x-show="!webAuthnLoading">🔏 Login dengan Biometrik / PIN</span>
-                    <span x-show="webAuthnLoading">Menunggu verifikasi perangkat...</span>
-                </button>
-                <p class="text-xs text-center text-gray-400 mt-2">
-                    <span x-show="!username.trim()">Browser akan menampilkan daftar akun yang tersimpan</span>
-                    <span x-show="username.trim()">Login sebagai <strong x-text="username"></strong> tanpa password</span>
-                </p>
-            </div>
 
         </div>
 

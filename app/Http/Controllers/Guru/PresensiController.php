@@ -7,6 +7,8 @@ use App\Models\HariLibur;
 use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\Presensi;
+use App\Models\Siswa;
+use App\Services\FonnteService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -99,7 +101,7 @@ class PresensiController extends Controller
     {
         $request->validate([
             'presensi' => 'required|array',
-            'tanggal' => 'required|date'
+            'tanggal'  => 'required|date'
         ]);
         
         $tanggal = $request->input('tanggal');
@@ -108,14 +110,51 @@ class PresensiController extends Controller
             foreach ($request->presensi as $siswaId => $status) {
                 Presensi::updateOrCreate(
                     ['siswa_id' => $siswaId, 'tanggal' => $tanggal],
-                    ['status' => $status]
+                    ['status'   => $status]
                 );
             }
         });
+
+        $this->kirimNotifikasiPresensi($request->presensi, $tanggal);
 
         return redirect()->route('guru.presensi.index', [
             'bulan' => Carbon::parse($tanggal)->format('m'),
             'tahun' => Carbon::parse($tanggal)->format('Y')
         ])->with('success', 'Presensi kelas ' . $kelas->nama_kelas . ' tanggal ' . Carbon::parse($tanggal)->translatedFormat('d F Y') . ' berhasil disimpan.');
+    }
+
+    private function kirimNotifikasiPresensi(array $presensiData, string $tanggal): void
+    {
+        $siswaIds = array_keys($presensiData);
+        $siswaList = Siswa::whereIn('id', $siswaIds)
+            ->with('orangtua')
+            ->get()
+            ->keyBy('id');
+
+        $fonnte  = new FonnteService();
+        $tglFmt  = Carbon::parse($tanggal)->locale('id')->isoFormat('dddd, D MMMM YYYY');
+
+        foreach ($presensiData as $siswaId => $status) {
+            $siswa = $siswaList->get($siswaId);
+            if (!$siswa || !$siswa->orangtua || empty($siswa->orangtua->no_hp)) {
+                continue;
+            }
+
+            $statusLabel = match($status) {
+                'hadir' => '✅ Hadir',
+                'sakit' => '🤒 Sakit',
+                'izin'  => '📋 Izin',
+                'alfa'  => '❌ Tidak Hadir (Alfa)',
+                default => ucfirst($status),
+            };
+
+            $pesan = "📋 *Info Presensi TPA*\n"
+                   . "Assalamu'alaikum Bapak/Ibu,\n\n"
+                   . "Presensi *{$siswa->nama}* pada *{$tglFmt}* telah dicatat.\n"
+                   . "Status: {$statusLabel}\n\n"
+                   . "Silakan cek dashboard untuk informasi lebih lengkap.";
+
+            $fonnte->send($siswa->orangtua->no_hp, $pesan);
+        }
     }
 }

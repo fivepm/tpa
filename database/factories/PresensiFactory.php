@@ -14,10 +14,9 @@ class PresensiFactory extends Factory
     public function definition(): array
     {
         return [
-            'siswa_id'  => Siswa::factory(),
-            'jadwal_id' => Jadwal::factory(),
-            'tanggal'   => fake()->dateTimeBetween('-3 months', 'now')->format('Y-m-d'),
-            'status'    => fake()->randomElement(['Hadir', 'Sakit', 'Izin', 'Alpha']),
+            'siswa_id' => Siswa::factory(),
+            'tanggal'  => fake()->dateTimeBetween('-3 months', 'now')->format('Y-m-d'),
+            'status'   => fake()->randomElement(['hadir', 'sakit', 'izin', 'alfa']),
         ];
     }
 }

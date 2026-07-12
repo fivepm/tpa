@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Guru;
 use App\Http\Controllers\Controller;
 use App\Models\Jadwal;
 use App\Models\Perkembangan;
+use App\Models\Siswa;
 use App\Models\HariLibur;
+use App\Services\FonnteService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -90,22 +92,30 @@ class PerkembanganController extends Controller
             'catatan' => 'required|array',
             'tanggal' => 'required|date'
         ]);
-        $tanggal = $request->input('tanggal');
+        $tanggal    = $request->input('tanggal');
+        $savedItems = [];
 
-        DB::transaction(function () use ($request, $jadwal, $tanggal) {
+        DB::transaction(function () use ($request, $jadwal, $tanggal, &$savedItems) {
             foreach ($request->catatan as $siswaId => $catatan) {
                 if (!empty($catatan)) {
                     Perkembangan::create([
-                        'siswa_id' => $siswaId,
+                        'siswa_id'  => $siswaId,
                         'jadwal_id' => $jadwal->id,
-                        'guru_id' => Auth::id(),
-                        'tanggal' => $tanggal,
+                        'guru_id'   => Auth::id(),
+                        'tanggal'   => $tanggal,
                         'penilaian' => $request->penilaian[$siswaId] ?? null,
-                        'catatan' => $catatan,
+                        'catatan'   => $catatan,
                     ]);
+
+                    $savedItems[$siswaId] = [
+                        'catatan'   => $catatan,
+                        'penilaian' => $request->penilaian[$siswaId] ?? null,
+                    ];
                 }
             }
         });
+
+        $this->kirimNotifikasiPerkembangan($savedItems, $jadwal, $tanggal);
 
         return redirect()->route('guru.perkembangan.index', [
             'bulan' => Carbon::parse($tanggal)->format('m'),
@@ -154,5 +164,41 @@ class PerkembanganController extends Controller
             'bulan' => Carbon::parse($tanggal)->format('m'),
             'tahun' => Carbon::parse($tanggal)->format('Y')
         ])->with('success', 'Catatan perkembangan berhasil diperbarui.');
+    }
+
+    private function kirimNotifikasiPerkembangan(array $savedItems, Jadwal $jadwal, string $tanggal): void
+    {
+        if (empty($savedItems)) return;
+
+        $jadwal->loadMissing('materi');
+
+        $siswaList = Siswa::whereIn('id', array_keys($savedItems))
+            ->with('orangtua')
+            ->get()
+            ->keyBy('id');
+
+        $fonnte  = new FonnteService();
+        $tglFmt  = Carbon::parse($tanggal)->locale('id')->isoFormat('dddd, D MMMM YYYY');
+        $materi  = $jadwal->materi->nama_materi ?? '—';
+
+        foreach ($savedItems as $siswaId => $data) {
+            $siswa = $siswaList->get($siswaId);
+            if (!$siswa || !$siswa->orangtua || empty($siswa->orangtua->no_hp)) {
+                continue;
+            }
+
+            $penilaian = $data['penilaian'] ? "Penilaian: *{$data['penilaian']}*\n" : '';
+
+            $pesan = "📝 *Catatan Perkembangan TPA*\n"
+                   . "Assalamu'alaikum Bapak/Ibu,\n\n"
+                   . "Terdapat catatan perkembangan untuk *{$siswa->nama}*.\n"
+                   . "Tanggal: *{$tglFmt}*\n"
+                   . "Materi: *{$materi}*\n"
+                   . $penilaian
+                   . "Catatan: _{$data['catatan']}_\n\n"
+                   . "Silakan cek dashboard untuk informasi lebih lengkap.";
+
+            $fonnte->send($siswa->orangtua->no_hp, $pesan);
+        }
     }
 }

@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-6 sm:py-12">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Info Jadwal --}}
             <div class="bg-amber-500 text-white rounded-xl p-5 mb-6 shadow-lg shadow-amber-200 flex items-center gap-4">

@@ -1,23 +1,23 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Jurnal Perkembangan: Kelas {{ $kelas->nama_kelas }}
-                </h2>
-                <p class="text-sm text-gray-500">
-                    Bulan {{ \Carbon\Carbon::create(null, $bulan, 1)->translatedFormat('F') }} {{ $tahun }}
-                </p>
-            </div>
-            <a href="{{ route('pengurus.rekap-jurnal.index', ['bulan' => $bulan, 'tahun' => $tahun]) }}"
-                class="text-sm text-gray-600 hover:text-gray-900">
-                &larr; Kembali ke Rekap
-            </a>
-        </div>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Jurnal Perkembangan: Kelas {{ $kelas->nama_kelas }}
+        </h2>
+        <p class="text-sm text-gray-500">
+            Bulan {{ \Carbon\Carbon::create(null, $bulan, 1)->translatedFormat('F') }} {{ $tahun }}
+        </p>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-6 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+
+            <div>
+                <a href="{{ route('pengurus.rekap-jurnal.index', ['bulan' => $bulan, 'tahun' => $tahun]) }}"
+                   class="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 font-medium">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Kembali ke Rekap Jurnal
+                </a>
+            </div>
 
             @forelse ($rekapSiswa as $rekap)
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">

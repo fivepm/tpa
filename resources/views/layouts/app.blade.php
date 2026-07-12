@@ -5,11 +5,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'TPA Sunten Permai') }}</title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <link rel="icon" type="image/x-icon" href="{{ asset('logo.png') }}">
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -21,7 +22,7 @@
                 :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}"
                 >
                 <div class="p-4 text-2xl font-bold border-b border-green-700 flex justify-center items-center gap-3">
-                    <img src="https://placehold.co/100x100/ffffff/16a34a?text=TPA" alt="Logo" class="h-8 w-8 rounded-full object-cover">
+                    <img src="{{ asset('logo.png') }}" alt="Logo" class="h-8 w-8 rounded-full object-cover">
                     <a href="#">TPA Sunten Permai</a>
                 </div>
                 <nav class="mt-4">
@@ -201,29 +202,6 @@
                 </header>
 
                 <main class="flex-1 p-6">
-                    {{-- Banner Fast Login (jika belum punya credential) --}}
-                    @if(Auth::user()->webAuthnCredentials()->count() === 0 && session('show_webauthn_prompt', true))
-                        <div id="webauthn-banner"
-                             x-data="{ show: false }"
-                             x-init="async () => { try { show = !!(window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()); } catch{} }"
-                             x-show="show"
-                             class="mb-4 flex items-center justify-between bg-indigo-50 border border-indigo-200 rounded-lg px-4 py-3">
-                            <div class="flex items-center gap-3">
-                                <span class="text-2xl">🔏</span>
-                                <div>
-                                    <p class="text-sm font-semibold text-indigo-800">Aktifkan Fast Login!</p>
-                                    <p class="text-xs text-indigo-600">Login lebih cepat menggunakan fingerprint, Face ID, atau PIN perangkat ini.</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <a href="{{ route('profile.index') }}"
-                                   class="inline-flex items-center px-3 py-1.5 bg-indigo-600 text-white text-xs font-semibold rounded-md hover:bg-indigo-700 transition">
-                                    Daftar Sekarang
-                                </a>
-                                <button @click="show = false" class="text-indigo-400 hover:text-indigo-600 text-lg leading-none">&times;</button>
-                            </div>
-                        </div>
-                    @endif
                     {{ $slot }}
                 </main>
             </div>

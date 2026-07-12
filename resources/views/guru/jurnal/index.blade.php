@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-6 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
             {{-- Notifikasi --}}
             @if (session('success'))
@@ -86,7 +86,7 @@
                                         </div>
                                     </div>
                                 @elseif ($data['jadwal']->isEmpty())
-                                    <div class="text-center py-12">
+                                    <div class="text-center py-6 sm:py-12">
                                         <div class="text-6xl mb-3">📭</div>
                                         <p class="text-gray-400 text-sm">Tidak ada jadwal mengajar pada tanggal ini.</p>
                                     </div>

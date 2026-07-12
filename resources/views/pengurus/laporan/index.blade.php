@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-6 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             
             <div class="bg-white p-4 shadow sm:rounded-lg">
                 <form action="{{ route('pengurus.laporan.index') }}" method="GET" class="flex flex-col sm:flex-row sm:items-end sm:space-x-4">

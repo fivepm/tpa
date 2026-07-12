@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\HariLibur;
 use App\Models\Jadwal;
 use App\Models\JurnalMengajar;
+use App\Models\Siswa;
+use App\Services\FonnteService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -54,7 +56,7 @@ class JurnalController extends Controller
                     $jadwalHariIni = $jadwalByHari->get($namaHari)->map(function ($jadwal) use ($tanggalStr) {
                         $newJadwal = clone $jadwal;
                         $newJadwal->sudah_ada_jurnal = JurnalMengajar::where('jadwal_id', $jadwal->id)
-                            ->where('tanggal', $tanggalStr)
+                            ->whereDate('tanggal', $tanggalStr)
                             ->exists();
                         return $newJadwal;
                     });
@@ -88,7 +90,7 @@ class JurnalController extends Controller
         abort_if($jadwal->guru_id !== Auth::id(), 403, 'Akses tidak diizinkan.');
 
         $jurnal = JurnalMengajar::where('jadwal_id', $jadwal->id)
-            ->where('tanggal', $tanggal)
+            ->whereDate('tanggal', $tanggal)
             ->first();
 
         if ($jurnal) {
@@ -121,14 +123,16 @@ class JurnalController extends Controller
         $tanggal = $request->input('tanggal');
 
         JurnalMengajar::create([
-            'jadwal_id'  => $jadwal->id,
-            'guru_id'    => Auth::id(),
-            'tanggal'    => $tanggal,
-            'topik'      => $validated['topik'],
-            'metode'     => $validated['metode'],
-            'ringkasan'  => $validated['ringkasan'],
-            'catatan'    => $validated['catatan'] ?? null,
+            'jadwal_id' => $jadwal->id,
+            'guru_id'   => Auth::id(),
+            'tanggal'   => $tanggal,
+            'topik'     => $validated['topik'],
+            'metode'    => $validated['metode'],
+            'ringkasan' => $validated['ringkasan'],
+            'catatan'   => $validated['catatan'] ?? null,
         ]);
+
+        $this->kirimNotifikasiJurnal($jadwal, $validated, $tanggal);
 
         return redirect()->route('guru.jurnal.index', [
             'bulan' => Carbon::parse($tanggal)->format('m'),
@@ -142,7 +146,7 @@ class JurnalController extends Controller
         abort_if($jadwal->guru_id !== Auth::id(), 403);
 
         $jurnal = JurnalMengajar::where('jadwal_id', $jadwal->id)
-            ->where('tanggal', $tanggal)
+            ->whereDate('tanggal', $tanggal)
             ->firstOrFail();
 
         $jadwal->load(['kelas', 'materi']);
@@ -170,7 +174,7 @@ class JurnalController extends Controller
         $tanggal = $request->input('tanggal');
 
         JurnalMengajar::where('jadwal_id', $jadwal->id)
-            ->where('tanggal', $tanggal)
+            ->whereDate('tanggal', $tanggal)
             ->update([
                 'topik'     => $validated['topik'],
                 'metode'    => $validated['metode'],
@@ -182,5 +186,35 @@ class JurnalController extends Controller
             'bulan' => Carbon::parse($tanggal)->format('m'),
             'tahun' => Carbon::parse($tanggal)->format('Y')
         ])->with('success', 'Jurnal mengajar berhasil diperbarui!');
+    }
+
+    private function kirimNotifikasiJurnal(Jadwal $jadwal, array $data, string $tanggal): void
+    {
+        $jadwal->loadMissing(['kelas.siswa.orangtua', 'materi']);
+
+        $siswaList = $jadwal->kelas->siswa ?? collect();
+        if ($siswaList->isEmpty()) return;
+
+        $fonnte  = new FonnteService();
+        $tglFmt  = Carbon::parse($tanggal)->locale('id')->isoFormat('dddd, D MMMM YYYY');
+        $materi  = $jadwal->materi->nama_materi ?? '—';
+        $metode  = $data['metode'] ? "Metode: {$data['metode']}\n" : '';
+
+        foreach ($siswaList as $siswa) {
+            if (!$siswa->orangtua || empty($siswa->orangtua->no_hp)) {
+                continue;
+            }
+
+            $pesan = "📚 *Jurnal Kegiatan TPA*\n"
+                   . "Assalamu'alaikum Bapak/Ibu Wali *{$siswa->nama}*,\n\n"
+                   . "Kegiatan belajar telah dilaksanakan pada *{$tglFmt}*.\n"
+                   . "Materi: *{$materi}*\n"
+                   . "Topik: *{$data['topik']}*\n"
+                   . $metode
+                   . "Ringkasan: _{$data['ringkasan']}_\n\n"
+                   . "Silakan cek dashboard untuk informasi lebih lengkap.";
+
+            $fonnte->send($siswa->orangtua->no_hp, $pesan);
+        }
     }
 }

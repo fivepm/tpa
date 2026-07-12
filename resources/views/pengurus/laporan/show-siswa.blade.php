@@ -1,22 +1,24 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Laporan Lengkap: {{ $siswa->nama }}
-                </h2>
-                <p class="text-sm text-gray-500">
-                    Kelas {{ $siswa->kelas->nama_kelas }} | Bulan {{ \Carbon\Carbon::create(null, $bulan, 1)->translatedFormat('F') }} {{ $tahun }}
-                </p>
-            </div>
-            <a href="{{ route('pengurus.laporan.showKelas', ['kelas' => $siswa->kelas_id, 'bulan' => $bulan, 'tahun' => $tahun]) }}" class="text-sm text-gray-600 hover:text-gray-900">
-                &larr; Kembali ke Laporan Kelas
-            </a>
+        <div>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                Laporan Lengkap: {{ $siswa->nama }}
+            </h2>
+            <p class="text-sm text-gray-500">
+                Kelas {{ $siswa->kelas->nama_kelas }} | Bulan {{ \Carbon\Carbon::create(null, $bulan, 1)->translatedFormat('F') }} {{ $tahun }}
+            </p>
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-6 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-4">
+                <a href="{{ route('pengurus.laporan.showKelas', ['kelas' => $siswa->kelas_id, 'bulan' => $bulan, 'tahun' => $tahun]) }}"
+                   class="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 font-medium">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Kembali ke Laporan Kelas
+                </a>
+            </div>
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <h3 class="text-lg font-medium mb-4">Log Kehadiran & Perkembangan</h3>

@@ -25,16 +25,18 @@ class OrangtuaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => ['required', 'string', 'max:255'],
+            'nama'     => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', Rule::unique('users')->whereNull('deleted_at')],
+            'no_hp'    => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         User::create([
-            'nama' => $request->nama,
+            'nama'     => $request->nama,
             'username' => $request->username,
+            'no_hp'    => $request->no_hp,
             'password' => Hash::make($request->password),
-            'role' => 'orangtua'
+            'role'     => 'orangtua'
         ]);
 
         return redirect()->route('pengurus.kelola-orangtua.index')->with('success', 'Data orang tua berhasil ditambahkan.');
@@ -50,14 +52,16 @@ class OrangtuaController extends Controller
     {
         $orangtua = $kelola_orangtua;
         $request->validate([
-            'nama' => ['required', 'string', 'max:255'],
+            'nama'     => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($orangtua->id)->whereNull('deleted_at')],
+            'no_hp'    => ['nullable', 'string', 'max:20'],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $orangtua->update([
-            'nama' => $request->nama,
+            'nama'     => $request->nama,
             'username' => $request->username,
+            'no_hp'    => $request->no_hp,
         ]);
 
         if ($request->filled('password')) {

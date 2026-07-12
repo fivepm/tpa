@@ -28,18 +28,20 @@ class GuruController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => ['required', 'string', 'max:255'],
+            'nama'     => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', Rule::unique('users')->whereNull('deleted_at')],
+            'no_hp'    => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'kelas' => ['nullable', 'array'],
-            'kelas.*' => ['exists:kelas,id_kelas']
+            'kelas'    => ['nullable', 'array'],
+            'kelas.*'  => ['exists:kelas,id_kelas']
         ]);
 
         $user = User::create([
-            'nama' => $request->nama,
+            'nama'     => $request->nama,
             'username' => $request->username,
+            'no_hp'    => $request->no_hp,
             'password' => Hash::make($request->password),
-            'role' => 'guru'
+            'role'     => 'guru'
         ]);
 
         if ($request->has('kelas')) {
@@ -60,16 +62,18 @@ class GuruController extends Controller
     {
         $guru = $kelola_guru;
         $request->validate([
-            'nama' => ['required', 'string', 'max:255'],
+            'nama'     => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($guru->id)->whereNull('deleted_at')],
+            'no_hp'    => ['nullable', 'string', 'max:20'],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-            'kelas' => ['nullable', 'array'],
-            'kelas.*' => ['exists:kelas,id_kelas'],
+            'kelas'    => ['nullable', 'array'],
+            'kelas.*'  => ['exists:kelas,id_kelas'],
         ]);
 
         $guru->update([
-            'nama' => $request->nama,
+            'nama'     => $request->nama,
             'username' => $request->username,
+            'no_hp'    => $request->no_hp,
         ]);
 
         if ($request->filled('password')) {
