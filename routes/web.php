@@ -82,7 +82,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/presensi/kelas/{kelas}', [PresensiController::class, 'show'])->name('presensi.show');
         Route::post('/presensi/kelas/{kelas}', [PresensiController::class, 'store'])->name('presensi.store');
         Route::get('/perkembangan', [PerkembanganController::class, 'index'])->name('perkembangan.index');
-        Route::get('/perkembangan', [PerkembanganController::class, 'index'])->name('perkembangan.index');
         Route::get('/perkembangan/{jadwal}/create', [PerkembanganController::class, 'create'])->name('perkembangan.create');
         Route::post('/perkembangan/{jadwal}', [PerkembanganController::class, 'store'])->name('perkembangan.store');
         Route::get('/perkembangan/{jadwal}/edit', [PerkembanganController::class, 'edit'])->name('perkembangan.edit');
