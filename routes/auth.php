@@ -35,7 +35,6 @@ Route::middleware('guest')->group(function () {
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
 
-    // WebAuthn — guest (untuk login)
     Route::post('webauthn/login/options', [WebAuthnController::class, 'loginOptions'])->name('webauthn.login.options');
     Route::post('webauthn/login', [WebAuthnController::class, 'login'])->name('webauthn.login');
 });

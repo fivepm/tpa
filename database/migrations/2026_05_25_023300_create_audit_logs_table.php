@@ -14,27 +14,21 @@ return new class extends Migration
         Schema::create('audit_logs', function (Blueprint $table) {
             $table->id();
 
-            // Siapa yang melakukan aksi
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('user_name')->nullable()->comment('Snapshot nama user saat aksi terjadi');
 
-            // Aksi apa yang dilakukan
             $table->string('event')->comment('created | updated | deleted | restored');
 
-            // Model mana yang berubah (polymorphic)
             $table->string('auditable_type')->comment('Nama class model, contoh: App\\Models\\Siswa');
             $table->unsignedBigInteger('auditable_id')->comment('ID record yang berubah');
             $table->index(['auditable_type', 'auditable_id']);
 
-            // Data sebelum & sesudah
             $table->json('old_values')->nullable()->comment('Data sebelum perubahan (null untuk created)');
             $table->json('new_values')->nullable()->comment('Data setelah perubahan (null untuk deleted)');
 
-            // Metadata request
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
 
-            // Hanya butuh created_at (log bersifat immutable)
             $table->timestamp('created_at')->useCurrent();
         });
     }

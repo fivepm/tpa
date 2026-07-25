@@ -16,22 +16,18 @@ class DashboardController extends Controller
         $guruId = Auth::id();
         $todayStr = Carbon::today(config('app.timezone'))->locale('id')->dayName;
 
-        // Jadwal hari ini lengkap dengan relasi
         $jadwalHariIni = Jadwal::with(['kelas', 'materi'])
             ->where('guru_id', $guruId)
             ->where('hari', $todayStr)
             ->orderBy('jam_mulai')
             ->get();
 
-        // Total Jadwal Hari Ini
         $totalJadwalHariIni = $jadwalHariIni->count();
 
-        // Total Kelas (unique classes taught by the guru)
         $totalKelas = Jadwal::where('guru_id', $guruId)
             ->distinct('kelas_id')
             ->count('kelas_id');
 
-        // Jurnal bulan ini
         $jurnalBulanIni = JurnalMengajar::whereHas('jadwal', function ($query) use ($guruId) {
                 $query->where('guru_id', $guruId);
             })
@@ -39,7 +35,6 @@ class DashboardController extends Controller
             ->whereYear('tanggal', date('Y'))
             ->count();
 
-        // Jurnal terbaru
         $jurnalTerbaru = JurnalMengajar::with(['jadwal.kelas', 'jadwal.materi'])
             ->whereHas('jadwal', function ($query) use ($guruId) {
                 $query->where('guru_id', $guruId);

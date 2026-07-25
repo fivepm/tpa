@@ -16,8 +16,6 @@ return new class extends Migration
             $table->foreignId('kelas_id')->constrained('kelas', 'id_kelas')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
-
-            // 1 kelas hanya boleh punya 1 wali kelas
             $table->unique('kelas_id');
         });
     }

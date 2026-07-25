@@ -28,19 +28,12 @@ class DashboardController extends Controller
         $bulan = (int) $request->input('bulan', now()->month);
         $tahun = (int) $request->input('tahun', now()->year);
 
-        // ---------------------------------------------------------------
-        // Presensi: eager-load jadwal.materi agar kita bisa tahu
-        // kelas_id anak pada PERIODE YANG DIPILIH (bukan kelas saat ini).
-        // Ini adalah kunci agar data tetap akurat walau anak sudah naik kelas.
-        // ---------------------------------------------------------------
         $presensi = Presensi::where('siswa_id', $selectedAnak->id)
             ->whereMonth('tanggal', $bulan)
             ->whereYear('tanggal', $tahun)
             ->with('jadwal.materi')
             ->get();
 
-        // Kumpulkan kelas_id dari presensi pada periode yang dipilih.
-        // Jika tidak ada presensi (misal bulan depan), fallback ke kelas saat ini.
         $kelasIdsPeriode = $presensi
             ->pluck('jadwal.kelas_id')
             ->unique()
@@ -51,9 +44,6 @@ class DashboardController extends Controller
             $kelasIdsPeriode = collect([$selectedAnak->kelas_id]);
         }
 
-        // ---------------------------------------------------------------
-        // Perkembangan (tetap aman: terikat ke siswa_id langsung)
-        // ---------------------------------------------------------------
         $perkembangan = Perkembangan::where('siswa_id', $selectedAnak->id)
             ->whereMonth('tanggal', $bulan)
             ->whereYear('tanggal', $tahun)
@@ -61,11 +51,6 @@ class DashboardController extends Controller
             ->orderBy('tanggal', 'desc')
             ->get();
 
-        // ---------------------------------------------------------------
-        // Jurnal Mengajar: gunakan kelas_id dari PERIODE yang dipilih,
-        // bukan kelas anak saat ini. Dengan ini, data lama tetap tampil
-        // meski anak sudah naik kelas.
-        // ---------------------------------------------------------------
         $jurnalMengajar = JurnalMengajar::whereHas('jadwal', function ($q) use ($kelasIdsPeriode) {
                 $q->whereIn('kelas_id', $kelasIdsPeriode);
             })
@@ -73,17 +58,12 @@ class DashboardController extends Controller
             ->whereYear('tanggal', $tahun)
             ->with('guru', 'jadwal.materi')
             ->get();
-
-        // ---------------------------------------------------------------
-        // Gabungkan semua log
-        // ---------------------------------------------------------------
         $logGabungan = collect();
 
         foreach ($presensi as $p) {
             $tgl    = Carbon::parse($p->tanggal);
             $detail = 'Kehadiran Harian';
 
-            // Gunakan jadwal dari presensi itu sendiri (historis & akurat)
             if ($p->jadwal && $p->jadwal->materi) {
                 $detail = 'Materi: ' . $p->jadwal->materi->nama_materi
                     . ' (' . Carbon::parse($p->jadwal->jam_mulai)->format('H:i') . ')';
@@ -125,9 +105,6 @@ class DashboardController extends Controller
 
         $logBulanan = $logGabungan->sortByDesc('tanggal');
 
-        // ---------------------------------------------------------------
-        // Jurnal Harian terpisah (dikelompokkan per tanggal)
-        // ---------------------------------------------------------------
         $jurnalHarian = JurnalMengajar::whereHas('jadwal', function ($q) use ($kelasIdsPeriode) {
                 $q->whereIn('kelas_id', $kelasIdsPeriode);
             })

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('catatan')->nullable();
             $table->timestamps();
 
-            $table->unique(['jadwal_id', 'tanggal']); // 1 jurnal per jadwal per hari
+            $table->unique(['jadwal_id', 'tanggal']);
         });
     }
 

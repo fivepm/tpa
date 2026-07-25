@@ -62,12 +62,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/laporan/kelas/{kelas}', [LaporanController::class, 'showKelas'])->name('laporan.showKelas');
         Route::get('/laporan/siswa/{siswa}', [LaporanController::class, 'showSiswa'])->name('laporan.showSiswa');
         Route::get('/laporan/kelas/{kelas}/pdf', [LaporanController::class, 'exportKelasPdf'])->name('laporan.exportKelasPdf');
-
-        // Rekapitulasi Jurnal Perkembangan
         Route::get('/rekap-jurnal', [RekapitulasiJurnalController::class, 'index'])->name('rekap-jurnal.index');
         Route::get('/rekap-jurnal/kelas/{kelas}', [RekapitulasiJurnalController::class, 'showKelas'])->name('rekap-jurnal.show-kelas');
-
-        // Wali Kelas
         Route::get('/kelola-walikelas', [WaliKelasController::class, 'index'])->name('kelola-walikelas.index');
         Route::get('/kelola-walikelas/create', [WaliKelasController::class, 'create'])->name('kelola-walikelas.create');
         Route::post('/kelola-walikelas', [WaliKelasController::class, 'store'])->name('kelola-walikelas.store');
@@ -87,8 +83,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/perkembangan/{jadwal}/edit', [PerkembanganController::class, 'edit'])->name('perkembangan.edit');
         Route::put('/perkembangan/{jadwal}', [PerkembanganController::class, 'update'])->name('perkembangan.update');
         Route::delete('/perkembangan/{perkembangan}', [PerkembanganController::class, 'destroy'])->name('perkembangan.destroy');
-
-        // Jurnal Mengajar
         Route::get('/jurnal', [JurnalController::class, 'index'])->name('jurnal.index');
         Route::get('/jurnal/{jadwal}/create', [JurnalController::class, 'create'])->name('jurnal.create');
         Route::post('/jurnal/{jadwal}', [JurnalController::class, 'store'])->name('jurnal.store');

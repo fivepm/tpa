@@ -11,9 +11,6 @@ use Illuminate\Support\Carbon;
 
 class RekapitulasiJurnalController extends Controller
 {
-    /**
-     * Tampilkan ringkasan jurnal perkembangan per kelas.
-     */
     public function index(Request $request)
     {
         $bulan = (int) $request->input('bulan', now()->month);
@@ -56,9 +53,6 @@ class RekapitulasiJurnalController extends Controller
         return view('pengurus.rekap-jurnal.index', compact('rekapKelas', 'bulan', 'tahun'));
     }
 
-    /**
-     * Tampilkan detail jurnal perkembangan untuk satu kelas.
-     */
     public function showKelas(Request $request, Kelas $kelas)
     {
         $bulan = (int) $request->input('bulan', now()->month);
@@ -67,7 +61,6 @@ class RekapitulasiJurnalController extends Controller
         $semuaSiswa = $kelas->siswa()->orderBy('nama')->get();
         $siswaIds   = $semuaSiswa->pluck('id');
 
-        // Ambil semua jurnal bulan ini untuk kelas ini, eager-load relasi
         $semuaJurnal = Perkembangan::whereIn('siswa_id', $siswaIds)
             ->whereMonth('tanggal', $bulan)
             ->whereYear('tanggal', $tahun)
@@ -75,7 +68,6 @@ class RekapitulasiJurnalController extends Controller
             ->orderBy('tanggal', 'desc')
             ->get();
 
-        // Rekap per siswa
         $rekapSiswa = [];
         foreach ($semuaSiswa as $siswa) {
             $jurnalSiswa = $semuaJurnal->where('siswa_id', $siswa->id);

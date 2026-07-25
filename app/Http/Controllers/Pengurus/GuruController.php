@@ -85,7 +85,6 @@ class GuruController extends Controller
         $kelasBaru = $request->kelas ?? [];
         $guru->kelas()->sync($kelasBaru);
 
-        // Hapus otomatis wali kelas jika guru sudah tidak mengajar di kelas tersebut
         WaliKelas::where('user_id', $guru->id)
             ->whereNotIn('kelas_id', $kelasBaru)
             ->delete();
@@ -96,7 +95,6 @@ class GuruController extends Controller
     public function destroy(User $kelola_guru)
     {
         $guru = $kelola_guru;
-        // Hapus wali kelas yang terkait guru ini sebelum dihapus
         WaliKelas::where('user_id', $guru->id)->delete();
         $guru->kelas()->detach();
         $guru->delete();
